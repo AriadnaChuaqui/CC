@@ -9,12 +9,86 @@ output: html_document
 > Estado: Primer trámite constitucional\
 > Total participantes: 259 personas\
 
-```{r setup, include = FALSE}
-# set the echo option to FALSE to see how the document looks with the code suppressed
-knitr::opts_chunk$set(echo = TRUE)
+
+```{r load-packages, include = FALSE}
+library(broom)
+library(dplyr)
+library(readr)
+library(tidyverse)
+library(knitr)
+library(readxl)
+library(RColorBrewer)
 ```
 
+```{r read-excel, include = FALSE}
+votos <- read_excel("VOTOS + COMENTARIOS Cambio Climático.xlsx", 
+    sheet = "VOTO GENERAL")
+
+coments <- read_excel("VOTOS + COMENTARIOS Cambio Climático.xlsx", 
+    sheet = "COMENTARIOS")
+```
+
+
 *** 
+
+
+```{r recode-gen, include = FALSE}
+votos <- votos %>%
+  mutate(genero = case_when (
+    genero == "1" ~ "Masculino",
+    genero == "2" ~ "Femenino",
+    genero == "-" ~ "Abstención"
+  ))
+```
+
+```{r recode-vote, include = FALSE}
+votos <- votos %>%
+  mutate(vote = case_when (
+    vote == "0" ~ "Si",
+    vote == "1" ~ "No",
+    vote == "2" ~ "Abstención"
+  ))
+```
+
+
+```{r freq-gen, include = FALSE}
+votos %>%
+  count(genero) %>%
+  mutate(freq_gen = n / sum(n))
+```
+
+```{r freq-vote, include = FALSE}
+freq_vote <- votos %>%
+  count(vote) %>%
+  mutate(percentage_voto = n / sum(n)*100)
+```
+
+
+### Votación General 
+
+A favor    |  En contra   |  Abstención  |
+---------- | ------------ | ------------ |
+  212      |     36       |     11       |   
+           |              |              |
+
+
+```{r viz-vote, echo = FALSE}
+ggplot(freq_vote, aes(x = "", y = percentage_voto, fill = vote)) +
+  geom_bar(stat="identity", width=2, color="white") +
+  coord_polar("y", start=0) +
+  theme_void() + 
+  theme(legend.position = "none") +
+  scale_fill_manual(values=c("#CCCCCC", "#FF3300", "#00CC33")) 
+```
+
+
+
+
+Masculino  |  Femenino    |  Abstención  |
+---------- | ------------ | ------------ |
+  168      |     56       |     35       |   
+           |              |              |
+
 
 
 
