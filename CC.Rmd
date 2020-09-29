@@ -1,5 +1,5 @@
 ---
-title: "Proyecto Ley Cambio Climático"
+title: "Proyecto de Ley Cambio Climático"
 author: "Ariadna Chuaqui"
 date: "9/29/2020"
 output: html_document
