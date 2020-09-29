@@ -1,0 +1,15 @@
+---
+title: "Proyecto Ley Cambio Climático"
+author: "Ariadna Chuaqui"
+date: "9/29/2020"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+# set the echo option to FALSE to see how the document looks with the code suppressed
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
