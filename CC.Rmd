@@ -1,15 +1,28 @@
 ---
-title: "Proyecto de Ley Cambio Climático"
-author: "Ariadna Chuaqui"
-date: "9/29/2020"
+title: "Proyecto de ley que fija Ley Marco de Cambio Climático" 
+subtitle: "Reporte Congreso Virtual"
+author: "Boletín: 13191-12"
 output: html_document
 ---
+
+> Fecha de ingreso: lunes 13 de enero de 2020\
+> Estado: Primer trámite constitucional\
+> Total participantes: 259 personas\
 
 ```{r setup, include = FALSE}
 # set the echo option to FALSE to see how the document looks with the code suppressed
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+*** 
 
 
+
+
+
+
+
+
+
+ 
 
