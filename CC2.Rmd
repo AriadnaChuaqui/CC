@@ -1,0 +1,137 @@
+---
+title: "Proyecto de Ley que Fija Ley Marco de Cambio Climático"
+subtitle: "Reporte Congreso Virtual"
+author: "Boletín: 13191-12"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    social: menu
+    source_code: embed 
+---
+
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(dplyr)
+library(readr)
+library(tidyverse)
+library(knitr)
+library(readxl)
+library(janitor)
+library(broom)
+library(kableExtra)
+```
+
+```{r read-excel, include = FALSE}
+votos <- read_excel("VOTOS + COMENTARIOS Cambio Climático.xlsx", 
+    sheet = "VOTO GENERAL")
+
+coments <- read_excel("VOTOS + COMENTARIOS Cambio Climático.xlsx", 
+    sheet = "COMENTARIOS")
+```
+
+```{r recode-gen, include = FALSE}
+votos <- votos %>%
+  mutate(genero = case_when (
+    genero == "1" ~ "Masculino",
+    genero == "2" ~ "Femenino",
+    genero == "-" ~ "Abstención"
+  ))
+```
+
+```{r recode-vote, include = FALSE}
+votos <- votos %>%
+  mutate(vote = case_when (
+    vote == "0" ~ "A favor",
+    vote == "1" ~ "En contra",
+    vote == "2" ~ "Abstención"
+  ))
+```
+
+
+```{r freq-vote, include=FALSE}
+freq_vote <- votos %>%
+  count(vote) %>%
+  mutate(percentage_voto = n / sum(n)*100)
+```
+
+```{r freq-gen, include=FALSE}
+freq_gen <- votos %>%
+  count(genero) %>%
+  mutate(percentage_gen = n / sum(n)*100)
+```
+
+Sidebar {.sidebar}
+=======================================================================
+
+### Congreso Virtual
+Proyecto de ley, iniciado en mensaje de S.E. el Presidente de la República, que fija Ley Marco de Cambio Climático<br/>
+
+__Resumen__ <br/>
+Este proyecto crea un marco jurídico para asignar responsabilidades específicas en la implementación de medidas de mitigación y adaptación al cambio climático. De esta forma, se busca que las políticas, planes y programas orientados al cambio climático trascienda al gobierno de turno. Se incluye como meta de mitigación, el 2050, para lograr la neutralidad de emisiones de gases invernadero (es decir, que se absorba la misma cantidad que se produce).
+
+
+Votación General
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### Resultados Votación
+
+```{r table-vote, echo=FALSE, fig.align='left'}
+votos %>%
+  tabyl(vote) %>%
+  arrange(desc(n)) %>%
+  adorn_totals("row") %>%
+  adorn_pct_formatting(rounding = "half up", digits = 0) %>%
+  kable(col.names = c('Voto', '#', 'Porcentaje'),
+               align = c('ccc')) %>%
+  kable_styling(bootstrap_options = "striped", full_width = FALSE, 
+                                      position = "float_left")
+
+```
+
+
+### Votación por Género (%)
+
+```{r viz-gen, echo=FALSE, fig.height=3, fig.width=3, fig.align='right'}
+ggplot(freq_gen, aes(x = "", y = percentage_gen, fill = genero)) +
+  geom_bar(stat="identity", width=2, color="white") +
+  coord_polar("y", start=0) +
+  theme_void() + 
+  theme(legend.position = "right") +
+  guides(fill=guide_legend(title=NULL)) +
+  scale_fill_manual(values=c("#cab2d6", "#fdbf6f", "#CCCCCC"), 
+                    breaks=c("Masculino", "Femenino", "Abstención")) 
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Votación General (%)
+
+```{r viz-vote, echo=FALSE, fig.align='right', fig.height=3, fig.width=3}
+ggplot(freq_vote, aes(x = "", y = percentage_voto, fill = vote)) +
+  geom_bar(stat="identity", width=2, color="white") +
+  coord_polar("y", start=0) +
+  theme_void() + 
+  theme(legend.position = "right") +
+  guides(fill=guide_legend(title=NULL)) +
+  scale_fill_manual(values=c("#4daf4a", "#e41a1c", "#CCCCCC"), 
+                    breaks=c("A favor", "En contra", "Abstención")) 
+```
+
+
+### Regiones con mayor participación 
+
+```{r}
+
+```
+
+
+Comentarios
+=======================================================================
+
+### Comentarios con mayor número de "me gusta"

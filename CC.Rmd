@@ -68,7 +68,9 @@ freq_vote <- votos %>%
 ### Votación General 
 <br/>
 
-```{r table-vote, echo=FALSE}
+#### Resultados Votación
+
+```{r table-vote, echo=FALSE, fig.align='left'}
 votos %>%
   tabyl(vote) %>%
   arrange(desc(n)) %>%
@@ -82,7 +84,7 @@ votos %>%
 ```
 
 
-```{r viz-vote, echo=FALSE, fig.height=5, fig.width=5, fig.align = "right"}
+```{r viz-vote, echo=FALSE, fig.height=5, fig.width=5, fig.align='right'}
 ggplot(freq_vote, aes(x = "", y = percentage_voto, fill = vote)) +
   geom_bar(stat="identity", width=2, color="white") +
   coord_polar("y", start=0) +
