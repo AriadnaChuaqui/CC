@@ -11,13 +11,14 @@ output: html_document
 
 
 ```{r load-packages, include = FALSE}
-library(broom)
 library(dplyr)
 library(readr)
 library(tidyverse)
 library(knitr)
 library(readxl)
-library(RColorBrewer)
+library(janitor)
+library(broom)
+library(kableExtra)
 ```
 
 ```{r read-excel, include = FALSE}
@@ -44,8 +45,8 @@ votos <- votos %>%
 ```{r recode-vote, include = FALSE}
 votos <- votos %>%
   mutate(vote = case_when (
-    vote == "0" ~ "Si",
-    vote == "1" ~ "No",
+    vote == "0" ~ "A favor",
+    vote == "1" ~ "En contra",
     vote == "2" ~ "Abstención"
   ))
 ```
@@ -57,7 +58,7 @@ votos %>%
   mutate(freq_gen = n / sum(n))
 ```
 
-```{r freq-vote, include = FALSE}
+```{r freq-vote, include=FALSE}
 freq_vote <- votos %>%
   count(vote) %>%
   mutate(percentage_voto = n / sum(n)*100)
@@ -65,32 +66,32 @@ freq_vote <- votos %>%
 
 
 ### Votación General 
+<br/>
 
-A favor    |  En contra   |  Abstención  |
----------- | ------------ | ------------ |
-  212      |     36       |     11       |   
-           |              |              |
+```{r table-vote, echo=FALSE}
+votos %>%
+  tabyl(vote) %>%
+  arrange(desc(n)) %>%
+  adorn_totals("row") %>%
+  adorn_pct_formatting(rounding = "half up", digits = 0) %>%
+  kable(col.names = c('Voto', '#', 'Porcentaje'),
+               align = c('ccc')) %>%
+  kable_styling(bootstrap_options = "striped", full_width = FALSE, 
+                                      position = "float_left")
+
+```
 
 
-```{r viz-vote, echo = FALSE}
+```{r viz-vote, echo=FALSE, fig.height=5, fig.width=5, fig.align = "right"}
 ggplot(freq_vote, aes(x = "", y = percentage_voto, fill = vote)) +
   geom_bar(stat="identity", width=2, color="white") +
   coord_polar("y", start=0) +
   theme_void() + 
-  theme(legend.position = "none") +
-  scale_fill_manual(values=c("#CCCCCC", "#FF3300", "#00CC33")) 
+  theme(legend.position = "right") +
+  guides(fill=guide_legend(title=NULL)) +
+  scale_fill_manual(values=c("#4daf4a", "#e41a1c", "#CCCCCC"), 
+                    breaks=c("A favor", "En contra", "Abstención")) 
 ```
-
-
-
-
-Masculino  |  Femenino    |  Abstención  |
----------- | ------------ | ------------ |
-  168      |     56       |     35       |   
-           |              |              |
-
-
-
 
 
 
