@@ -4,7 +4,7 @@ subtitle: "Reporte Congreso Virtual"
 author: "Boletín: 13191-12"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: rows
+    orientation: columns
     social: menu
     source_code: embed 
 ---
@@ -48,6 +48,43 @@ votos <- votos %>%
   ))
 ```
 
+```{r region, include=FALSE}
+votos %>%
+  group_by(region) %>%
+  count()
+```
+
+
+```{r recode-region, include=FALSE}
+votos <- votos %>%
+  group_by(region) %>%
+  mutate(regionxnum = case_when (
+    region == "-" ~ "No responde",
+    region == "Baden-Württemberg" ~ "Otra",
+    region %in% c("Bío Bío", "Región del Biobío") ~ "Biobío",
+    region %in% c("Coquimbo", "Región de Coquimbo") ~ "Coquimbo",
+    region %in% c("Libertador General Bernardo O'Higgins", 
+                  "Región del Libertador General Bernardo O´Higgins") ~ 
+      "Libertador General Bernardo O’Higgins",
+    region %in% c("Los Ríos", "Región de Los Ríos") ~ "Los Ríos",
+    region %in% c("Maule", "Región del Maule") ~ "Maule", 
+    region %in% c("Metropolitana de Santiago", 
+                  "Región Metropolitana de Santiago") ~ "RM",
+    region == "Región de Antofagasta" ~ "Antofagasta",
+    region == "Región de Arica y Parinacota" ~ "Arica y Parinacota",
+    region == "Región de Atacama" ~ "Atacama",
+    region == "Región de Aysén del General Carlos Ibáñez del Campo" ~ 
+      "Aysén del General Carlos Ibáñez del Campo",
+    region == "Región de La Araucanía" ~ "La Araucanía",
+    region == "Región de Los Lagos" ~ "Los Lagos",
+    region == "Región de Magallanes y de la Antártica Chilena" ~ 
+      "Magallanes y de la Antártica Chilena",
+    region == "Región de Ñuble" ~ "Ñuble",
+    region %in% c("Región de Valparaíso", "Valparaíso") ~ "Valparaíso",
+    region == "Tarapacá" ~ "Tarapacá"
+  ))
+```
+
 
 ```{r freq-vote, include=FALSE}
 freq_vote <- votos %>%
@@ -74,7 +111,7 @@ Este proyecto crea un marco jurídico para asignar responsabilidades específica
 Votación General
 =======================================================================
 
-Row
+Column
 -----------------------------------------------------------------------
 
 ### Resultados Votación
@@ -92,10 +129,22 @@ votos %>%
 
 ```
 
+### Votación General (%)
+
+```{r viz-vote, echo=FALSE}
+ggplot(freq_vote, aes(x = "", y = percentage_voto, fill = vote)) +
+  geom_bar(stat="identity", width=2, color="white") +
+  coord_polar("y", start=0) +
+  theme_void() + 
+  theme(legend.position = "right") +
+  guides(fill=guide_legend(title=NULL)) +
+  scale_fill_manual(values=c("#4daf4a", "#e41a1c", "#CCCCCC"), 
+                    breaks=c("A favor", "En contra", "Abstención")) 
+```
 
 ### Votación por Género (%)
 
-```{r viz-gen, echo=FALSE, fig.height=3, fig.width=3, fig.align='right'}
+```{r viz-gen, echo=FALSE}
 ggplot(freq_gen, aes(x = "", y = percentage_gen, fill = genero)) +
   geom_bar(stat="identity", width=2, color="white") +
   coord_polar("y", start=0) +
@@ -107,27 +156,16 @@ ggplot(freq_gen, aes(x = "", y = percentage_gen, fill = genero)) +
 ```
 
 
-Row
+Column
 -----------------------------------------------------------------------
-
-### Votación General (%)
-
-```{r viz-vote, echo=FALSE, fig.align='right', fig.height=3, fig.width=3}
-ggplot(freq_vote, aes(x = "", y = percentage_voto, fill = vote)) +
-  geom_bar(stat="identity", width=2, color="white") +
-  coord_polar("y", start=0) +
-  theme_void() + 
-  theme(legend.position = "right") +
-  guides(fill=guide_legend(title=NULL)) +
-  scale_fill_manual(values=c("#4daf4a", "#e41a1c", "#CCCCCC"), 
-                    breaks=c("A favor", "En contra", "Abstención")) 
-```
 
 
 ### Regiones con mayor participación 
 
-```{r}
-
+```{r viz-regionxnum}
+ggplot(data = votos, mapping = aes(x = regionxnum)) + 
+  geom_histogram(stat="count") + 
+  coord_flip()
 ```
 
 
