@@ -20,6 +20,7 @@ library(readxl)
 library(janitor)
 library(broom)
 library(kableExtra)
+library(forcats)
 ```
 
 ```{r read-excel, include = FALSE}
@@ -48,24 +49,17 @@ votos <- votos %>%
   ))
 ```
 
-```{r region, include=FALSE}
-votos %>%
-  group_by(region) %>%
-  count()
-```
-
-
 ```{r recode-region, include=FALSE}
 votos <- votos %>%
   group_by(region) %>%
-  mutate(regionxnum = case_when (
+  mutate(region = case_when (
     region == "-" ~ "No responde",
     region == "Baden-Württemberg" ~ "Otra",
     region %in% c("Bío Bío", "Región del Biobío") ~ "Biobío",
     region %in% c("Coquimbo", "Región de Coquimbo") ~ "Coquimbo",
     region %in% c("Libertador General Bernardo O'Higgins", 
                   "Región del Libertador General Bernardo O´Higgins") ~ 
-      "Libertador General Bernardo O’Higgins",
+      "O’Higgins",
     region %in% c("Los Ríos", "Región de Los Ríos") ~ "Los Ríos",
     region %in% c("Maule", "Región del Maule") ~ "Maule", 
     region %in% c("Metropolitana de Santiago", 
@@ -73,29 +67,37 @@ votos <- votos %>%
     region == "Región de Antofagasta" ~ "Antofagasta",
     region == "Región de Arica y Parinacota" ~ "Arica y Parinacota",
     region == "Región de Atacama" ~ "Atacama",
-    region == "Región de Aysén del General Carlos Ibáñez del Campo" ~ 
-      "Aysén del General Carlos Ibáñez del Campo",
+    region == "Región de Aysén del General Carlos Ibáñez del Campo" ~ "Aysén",
     region == "Región de La Araucanía" ~ "La Araucanía",
     region == "Región de Los Lagos" ~ "Los Lagos",
     region == "Región de Magallanes y de la Antártica Chilena" ~ 
-      "Magallanes y de la Antártica Chilena",
+      "Magallanes y Antártica Chilena",
     region == "Región de Ñuble" ~ "Ñuble",
     region %in% c("Región de Valparaíso", "Valparaíso") ~ "Valparaíso",
     region == "Tarapacá" ~ "Tarapacá"
   ))
 ```
 
-
-```{r freq-vote, include=FALSE}
-freq_vote <- votos %>%
-  count(vote) %>%
-  mutate(percentage_voto = n / sum(n)*100)
+```{r count-vote, include=FALSE}
+suma_vote <- votos %>%
+  group_by(vote) %>%  
+  count(name = "sumavoto") %>%
+  mutate(prop = ((sumavoto / nrow(votos))*100)) %>%
+  mutate(prop_vote = round(prop))
 ```
 
-```{r freq-gen, include=FALSE}
-freq_gen <- votos %>%
-  count(genero) %>%
-  mutate(percentage_gen = n / sum(n)*100)
+```{r count-gen, include=FALSE}
+suma_gen <- votos %>%
+  group_by(genero) %>%
+  count(name = "sumagenero") %>%
+  mutate(prop = (sumagenero / nrow(votos))*100) %>%
+  mutate(prop_gen = round(prop))
+```
+
+```{r count-region, include=FALSE}
+suma_region <- votos %>%
+  group_by(region) %>%
+  count(name = "sumaregion", sort = TRUE)
 ```
 
 Sidebar {.sidebar}
@@ -114,45 +116,43 @@ Votación General
 Column
 -----------------------------------------------------------------------
 
-### Resultados Votación
-
-```{r table-vote, echo=FALSE, fig.align='left'}
-votos %>%
-  tabyl(vote) %>%
-  arrange(desc(n)) %>%
-  adorn_totals("row") %>%
-  adorn_pct_formatting(rounding = "half up", digits = 0) %>%
-  kable(col.names = c('Voto', '#', 'Porcentaje'),
-               align = c('ccc')) %>%
-  kable_styling(bootstrap_options = "striped", full_width = FALSE, 
-                                      position = "float_left")
-
-```
 
 ### Votación General (%)
 
 ```{r viz-vote, echo=FALSE}
-ggplot(freq_vote, aes(x = "", y = percentage_voto, fill = vote)) +
+ggplot(suma_vote, aes(x = "", y = prop_vote, fill = vote)) +
   geom_bar(stat="identity", width=2, color="white") +
-  coord_polar("y", start=0) +
+  coord_polar("y", start=0, direction = -1) +
   theme_void() + 
   theme(legend.position = "right") +
   guides(fill=guide_legend(title=NULL)) +
-  scale_fill_manual(values=c("#4daf4a", "#e41a1c", "#CCCCCC"), 
+  theme(legend.text = element_text(size=20)) +
+  geom_text(aes(y = prop_vote, label = prop_vote), color = "white", size=10, 
+            face="bold", position = position_stack(vjust = 0.4)) +
+  scale_fill_manual(values=c("#33a02c", "#e31a1c", "#CCCCCC"), 
                     breaks=c("A favor", "En contra", "Abstención")) 
 ```
 
 ### Votación por Género (%)
 
-```{r viz-gen, echo=FALSE}
-ggplot(freq_gen, aes(x = "", y = percentage_gen, fill = genero)) +
+```{r viz-gen1, echo=FALSE}
+ggplot(suma_gen, aes(x = "", y = prop_gen, fill = genero)) +
   geom_bar(stat="identity", width=2, color="white") +
   coord_polar("y", start=0) +
   theme_void() + 
   theme(legend.position = "right") +
+  theme(legend.text = element_text(size=20)) +
   guides(fill=guide_legend(title=NULL)) +
-  scale_fill_manual(values=c("#cab2d6", "#fdbf6f", "#CCCCCC"), 
+  geom_text(aes(y = prop_gen, label = prop_gen), color = "white", size=10, 
+            face="bold", position = position_stack(vjust = 0.5)) +
+  scale_fill_manual(values=c("#cab2d6", "#ff7f00", "#CCCCCC"), 
                     breaks=c("Masculino", "Femenino", "Abstención")) 
+```
+
+```{r viz-gen2, echo=FALSE}
+ggplot(suma_gen, aes(x = "", y = sumagenero, fill = genero)) +
+  geom_bar(stat="identity") +
+  coord_flip()
 ```
 
 
@@ -162,10 +162,14 @@ Column
 
 ### Regiones con mayor participación 
 
-```{r viz-regionxnum}
-ggplot(data = votos, mapping = aes(x = regionxnum)) + 
-  geom_histogram(stat="count") + 
-  coord_flip()
+```{r viz-region, width = 5, height = 5}
+suma_region %>%
+  mutate(region = fct_reorder(region, sumaregion)) %>%
+  ggplot(aes(x = region, y = sumaregion)) + 
+  geom_bar(stat = "identity", fill = "#1f78b4") + 
+  coord_flip() +
+  theme_classic() +
+  labs(title ="", x = "", y = "")
 ```
 
 

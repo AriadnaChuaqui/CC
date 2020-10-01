@@ -1,0 +1,21 @@
+---
+title: "notas"
+author: "Ariadna Chuaqui"
+date: "10/1/2020"
+output: html_document
+---
+
+### Resultados Votación
+
+```{r table-vote, echo=FALSE, fig.align='center'}
+votos %>%
+  tabyl(vote) %>%
+  arrange(desc(n)) %>%
+  adorn_totals("row") %>%
+  adorn_pct_formatting(rounding = "half up", digits = 0) %>%
+  kable(col.names = c('Voto', '#', 'Porcentaje'),
+               align = c('ccc')) %>%
+  kable_styling(bootstrap_options = "striped", full_width = FALSE, 
+                                      position = "center")
+
+```
