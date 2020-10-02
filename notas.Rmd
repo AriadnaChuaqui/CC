@@ -19,3 +19,39 @@ votos %>%
                                       position = "center")
 
 ```
+
+
+
+
+### Comentarios positivos
+
+```{r box-pos-com}
+articles <- computeArticles()
+valueBox(articles, icon = "fa-pencil")
+```
+
+### Comentarios negativos
+
+```{r box-neg-com}
+spam <- computeSpam()
+valueBox(spam, 
+         icon = "fa-trash",
+         color = ifelse(spam > 10, "warning", "primary"))
+```
+
+
+### Comentarios con Sentimiento Positivo {.value-box}
+
+```{r box-com-pos}
+comments %>%
+  count(buen_comentario = "Si") %>%
+  valueBox(icon = "fa-thumbs-up", color = "#b2df8a")  
+```
+
+### Comentarios con Sentimiento Negativo {.value-box}
+
+```{r box-com-neg}
+comments %>%
+  count(buen_comentario = "No") %>%
+  valueBox(icon = "fa-thumbs-down", color = "#fb9a99")
+```

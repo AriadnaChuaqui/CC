@@ -5,6 +5,7 @@ author: "Boletín: 13191-12"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
+    vertical_layout: fill
     social: menu
     source_code: embed 
 ---
@@ -27,7 +28,7 @@ library(forcats)
 votos <- read_excel("VOTOS + COMENTARIOS Cambio Climático.xlsx", 
     sheet = "VOTO GENERAL")
 
-coments <- read_excel("VOTOS + COMENTARIOS Cambio Climático.xlsx", 
+comments <- read_excel("VOTOS + COMENTARIOS Cambio Climático.xlsx", 
     sheet = "COMENTARIOS")
 ```
 
@@ -48,6 +49,7 @@ votos <- votos %>%
     vote == "2" ~ "Abstención"
   ))
 ```
+
 
 ```{r recode-region, include=FALSE}
 votos <- votos %>%
@@ -71,7 +73,7 @@ votos <- votos %>%
     region == "Región de La Araucanía" ~ "La Araucanía",
     region == "Región de Los Lagos" ~ "Los Lagos",
     region == "Región de Magallanes y de la Antártica Chilena" ~ 
-      "Magallanes y Antártica Chilena",
+      "Magallanes y Antártica",
     region == "Región de Ñuble" ~ "Ñuble",
     region %in% c("Región de Valparaíso", "Valparaíso") ~ "Valparaíso",
     region == "Tarapacá" ~ "Tarapacá"
@@ -98,7 +100,12 @@ suma_gen <- votos %>%
 suma_region <- votos %>%
   group_by(region) %>%
   count(name = "sumaregion", sort = TRUE)
+  
+suma_region <- suma_region %>%
+  mutate(ToHighlight = ifelse(region == "RM", "yes", "no"))
 ```
+
+
 
 Sidebar {.sidebar}
 =======================================================================
@@ -110,10 +117,39 @@ __Resumen__ <br/>
 Este proyecto crea un marco jurídico para asignar responsabilidades específicas en la implementación de medidas de mitigación y adaptación al cambio climático. De esta forma, se busca que las políticas, planes y programas orientados al cambio climático trascienda al gobierno de turno. Se incluye como meta de mitigación, el 2050, para lograr la neutralidad de emisiones de gases invernadero (es decir, que se absorba la misma cantidad que se produce).
 
 
-Votación General
+Votación General {data-icon="fa-chart-pie"} 
 =======================================================================
 
-Column
+Column {data-width=100}
+-----------------------------------------------------------------------
+
+### Total Participantes {.value-box}
+
+```{r box-total-votos}
+valueBox(nrow(votos)) 
+```
+
+
+### Votos a favor {.value-box}
+
+```{r box-votos-favor}
+valueBox(212, color = "#b2df8a") 
+```
+
+### Votos en contra {.value-box}
+
+```{r box-votos-contra}
+valueBox(36, color = "#fb9a99") 
+```
+
+### Abstención {.value-box}
+
+```{r box-votos-abs}
+valueBox(11, color = "#CCCCCC") 
+```
+
+
+Column  {data-width=500}
 -----------------------------------------------------------------------
 
 
@@ -150,30 +186,73 @@ ggplot(suma_gen, aes(x = "", y = prop_gen, fill = genero)) +
 ```
 
 ```{r viz-gen2, echo=FALSE}
-ggplot(suma_gen, aes(x = "", y = sumagenero, fill = genero)) +
+ggplot(suma_gen, aes(x = "", y = prop_gen, fill = genero)) +
   geom_bar(stat="identity") +
-  coord_flip()
+  coord_flip() +
+  labs(title = "", x = "", y = "%", fill = "") +
+  theme_classic() +
+  guides(fill=guide_legend(title=NULL)) +
+  geom_text(aes(y = prop_gen, label = prop_gen), color = "white", size=10, 
+            face="bold", position = position_stack(vjust = 0.5)) +
+  scale_fill_manual(values=c("#cab2d6", "#ff7f00", "#CCCCCC"), 
+                    breaks=c("Masculino", "Femenino", "Abstención")) 
 ```
 
 
-Column
+Column  {data-width=500}
 -----------------------------------------------------------------------
 
 
-### Regiones con mayor participación 
+### Número de participantes por región 
 
-```{r viz-region, width = 5, height = 5}
-suma_region %>%
-  mutate(region = fct_reorder(region, sumaregion)) %>%
-  ggplot(aes(x = region, y = sumaregion)) + 
-  geom_bar(stat = "identity", fill = "#1f78b4") + 
-  coord_flip() +
+```{r viz-region, width = 20, height = 5, fig.align='right'}
+  ggplot(suma_region, aes(y = reorder(region, sumaregion), x = sumaregion, 
+                          fill = ToHighlight )) + 
+  geom_bar(stat = "identity", position = "dodge") + 
   theme_classic() +
-  labs(title ="", x = "", y = "")
+  labs(title ="", x = "Número participantes", y = "") +
+  geom_text(aes(label = sumaregion), color = "black", size=3, 
+            face="bold", vjust = 0.5, hjust = -0.2) +
+  scale_fill_manual( values = c("yes" = "#1f78b4", "no" = "#CCCCCC"), 
+                     guide = FALSE)
 ```
 
 
-Comentarios
+Comentarios {data-icon="fa-comments"}
 =======================================================================
 
-### Comentarios con mayor número de "me gusta"
+Column {data-width=100}
+-----------------------------------------------------------------------
+
+### Total Comentarios
+
+```{r box-total-com}
+valueBox(nrow(comments), icon = "fa-comments") 
+```
+
+Column 
+-----------------------------------------------------------------------
+
+### Comentarios con número de "me gusta"
+
+```{r me-gusta}
+comments %>%
+  select(comment, me_gusta, no_me_gusta) %>%
+  arrange(desc("me_gusta")) %>%
+  kable(col.names = c('Comentario', '"Me gusta"',
+                      '"No me gusta"'),
+               align = c('lcc')) %>%
+  kable_styling(bootstrap_options = "striped", full_width = TRUE)       
+```
+
+
+
+
+
+
+
+
+
+
+
+
