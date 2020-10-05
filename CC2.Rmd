@@ -22,6 +22,9 @@ library(janitor)
 library(broom)
 library(kableExtra)
 library(forcats)
+library(ggfittext)
+library(extrafont)
+font_import()
 ```
 
 ```{r read-excel, include = FALSE}
@@ -130,19 +133,19 @@ valueBox(nrow(votos))
 ```
 
 
-### Votos a favor {.value-box}
+### Votos <br/> a favor {.value-box}
 
 ```{r box-votos-favor}
 valueBox(212, color = "#b2df8a") 
 ```
 
-### Votos en contra {.value-box}
+### Votos <br/> en contra {.value-box}
 
 ```{r box-votos-contra}
 valueBox(36, color = "#fb9a99") 
 ```
 
-### Abstención {.value-box}
+### No <br/> responde {.value-box}
 
 ```{r box-votos-abs}
 valueBox(11, color = "#CCCCCC") 
@@ -156,15 +159,18 @@ Column  {data-width=500}
 ### Votación General (%)
 
 ```{r viz-vote, echo=FALSE}
-ggplot(suma_vote, aes(x = "", y = prop_vote, fill = vote)) +
+ggplot(suma_vote, aes(x = "", y = prop, fill = vote)) +
   geom_bar(stat="identity", width=2, color="white") +
   coord_polar("y", start=0, direction = -1) +
   theme_void() + 
   theme(legend.position = "right") +
   guides(fill=guide_legend(title=NULL)) +
-  theme(legend.text = element_text(size=20)) +
-  geom_text(aes(y = prop_vote, label = prop_vote), color = "white", size=10, 
-            face="bold", position = position_stack(vjust = 0.4)) +
+  theme(legend.text = element_text(size=15)) +
+  geom_text(aes(y = prop, label = scales::percent(prop, accuracy = 1, 
+                                                  scale = 1)), 
+            color = "white", size=10, 
+            face="bold", position = position_stack(vjust = 0.5)) +
+  theme(text = element_text(family = "Monsal Gothic Light")) +
   scale_fill_manual(values=c("#33a02c", "#e31a1c", "#CCCCCC"), 
                     breaks=c("A favor", "En contra", "Abstención")) 
 ```
@@ -172,47 +178,52 @@ ggplot(suma_vote, aes(x = "", y = prop_vote, fill = vote)) +
 ### Votación por Género (%)
 
 ```{r viz-gen1, echo=FALSE}
-ggplot(suma_gen, aes(x = "", y = prop_gen, fill = genero)) +
+ggplot(suma_gen, aes(x = "", y = prop, fill = genero)) +
   geom_bar(stat="identity", width=2, color="white") +
   coord_polar("y", start=0) +
   theme_void() + 
   theme(legend.position = "right") +
-  theme(legend.text = element_text(size=20)) +
+  theme(legend.text = element_text(size=15)) +
   guides(fill=guide_legend(title=NULL)) +
-  geom_text(aes(y = prop_gen, label = prop_gen), color = "white", size=10, 
+  geom_text(aes(y = prop, label = scales::percent(prop, accuracy = 1, 
+                                                  scale = 1)), 
+            color = "white", size=10, 
             face="bold", position = position_stack(vjust = 0.5)) +
+   theme(text = element_text(family = "Monsal Gothic Light")) +
   scale_fill_manual(values=c("#cab2d6", "#ff7f00", "#CCCCCC"), 
                     breaks=c("Masculino", "Femenino", "Abstención")) 
 ```
 
 ```{r viz-gen2, echo=FALSE}
-ggplot(suma_gen, aes(x = "", y = prop_gen, fill = genero)) +
+ggplot(suma_gen, aes(x = "", y = prop, fill = genero)) +
   geom_bar(stat="identity") +
   coord_flip() +
   labs(title = "", x = "", y = "%", fill = "") +
   theme_classic() +
-  guides(fill=guide_legend(title=NULL)) +
-  geom_text(aes(y = prop_gen, label = prop_gen), color = "white", size=10, 
+  geom_text(aes(y = prop, label = scales::percent(prop, accuracy = 1, 
+                                                  scale = 1)), 
+            color = "white", size=8, 
             face="bold", position = position_stack(vjust = 0.5)) +
+  theme(text = element_text(family = "Monsal Gothic Light")) +
   scale_fill_manual(values=c("#cab2d6", "#ff7f00", "#CCCCCC"), 
                     breaks=c("Masculino", "Femenino", "Abstención")) 
 ```
 
 
-Column  {data-width=500}
+Column
 -----------------------------------------------------------------------
 
 
 ### Número de participantes por región 
 
-```{r viz-region, width = 20, height = 5, fig.align='right'}
-  ggplot(suma_region, aes(y = reorder(region, sumaregion), x = sumaregion, 
+```{r viz-region, fig.align='right'}
+ggplot(suma_region, aes(y = reorder(region, sumaregion), x = sumaregion, 
                           fill = ToHighlight )) + 
-  geom_bar(stat = "identity", position = "dodge") + 
+  geom_bar(stat = "identity", position = "identity") + 
   theme_classic() +
   labs(title ="", x = "Número participantes", y = "") +
-  geom_text(aes(label = sumaregion), color = "black", size=3, 
-            face="bold", vjust = 0.5, hjust = -0.2) +
+  geom_text(aes(label = sumaregion), color = "black", size=3.1, hjust = -0.2) +
+  theme(text = element_text(family = "Monsal Gothic Light")) +
   scale_fill_manual( values = c("yes" = "#1f78b4", "no" = "#CCCCCC"), 
                      guide = FALSE)
 ```
@@ -227,7 +238,7 @@ Column {data-width=100}
 ### Total Comentarios
 
 ```{r box-total-com}
-valueBox(nrow(comments), icon = "fa-comments") 
+valueBox(nrow(comments)) 
 ```
 
 Column 
