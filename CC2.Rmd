@@ -1,5 +1,5 @@
 ---
-title: "Proyecto de Ley que Fija Ley Marco de Cambio Climático"
+title: "Proyecto de ley que fija Ley Marco de Cambio Climático"
 subtitle: "Reporte Congreso Virtual"
 author: "Boletín: 13191-12"
 output: 
@@ -32,7 +32,7 @@ votos <- read_excel("VOTOS + COMENTARIOS Cambio Climático.xlsx",
     sheet = "VOTO GENERAL")
 
 comments <- read_excel("VOTOS + COMENTARIOS Cambio Climático.xlsx", 
-    sheet = "COMENTARIOS")
+    sheet = "COMENTARIOS2")
 ```
 
 ```{r recode-gen, include = FALSE}

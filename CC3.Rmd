@@ -1,14 +1,16 @@
 ---
-title: "Proyecto de Ley que fija Ley Marco de Cambio Climático" 
-subtitle: "Boletín: 13191-12"
-output: pdf_document
+title: "**Proyecto de ley que fija Ley Marco de Cambio Climático**"
+date: "Boletín: 13191-12"
+author: "**Reporte Congreso Virtual**"
+fontsize: 10pt
+output: 
+  beamer_presentation:
+    theme: "CambridgeUS"
+    colortheme: "dolphin"
+    slide_level: 3
+    latex_engine: xelatex
+    dev: cairo_pdf
 ---
-
-> Fecha de ingreso: lunes 13 de enero de 2020\
-> Estado: Primer trámite constitucional\
-> Total participantes: 259 personas
-
-*** 
 
 ```{r load-packages, include = FALSE}
 library(dplyr)
@@ -27,7 +29,7 @@ votos <- read_excel("VOTOS + COMENTARIOS Cambio Climático.xlsx",
     sheet = "VOTO GENERAL")
 
 comments <- read_excel("VOTOS + COMENTARIOS Cambio Climático.xlsx", 
-    sheet = "COMENTARIOS")
+    sheet = "COMENTARIOS2")
 ```
 
 ```{r recode-gen, include = FALSE}
@@ -47,7 +49,6 @@ votos <- votos %>%
     vote == "2" ~ "Abstención"
   ))
 ```
-
 
 ```{r recode-region, include=FALSE}
 votos <- votos %>%
@@ -103,16 +104,18 @@ suma_region <- suma_region %>%
   mutate(ToHighlight = ifelse(region == "RM", "yes", "no"))
 ```
 
-__Congreso Virtual:__ <br/>
-Proyecto de ley, iniciado en mensaje de S.E. el Presidente de la República, que fija Ley Marco de Cambio Climático<br/>
+### Información General 
 
-__Resumen:__ <br/>
-Este proyecto crea un marco jurídico para asignar responsabilidades específicas en la implementación de medidas de mitigación y adaptación al cambio climático. De esta forma, se busca que las políticas, planes y programas orientados al cambio climático trascienda al gobierno de turno. Se incluye como meta de mitigación, el 2050, para lograr la neutralidad de emisiones de gases invernadero (es decir, que se absorba la misma cantidad que se produce).
+Proyecto de ley, iniciado en mensaje de S.E. el Presidente de la República, que fija **Ley Marco de Cambio Climático.** <br/>
 
+Este proyecto crea un marco jurídico para asignar responsabilidades específicas en la implementación de medidas de mitigación y adaptación al cambio climático. De esta forma, se busca que las políticas, planes y programas orientados al cambio climático trascienda al gobierno de turno. Se incluye como meta de mitigación, el 2050, para lograr la neutralidad de emisiones de gases invernadero (es decir, que se absorba la misma cantidad que se produce). <br/>
 
-## Votación General 
+*Fecha de ingreso: lunes 13 de enero de 2020*\
+*Estado: primer trámite constitucional*\
 
-```{r viz-vote, echo=FALSE, warning=FALSE}
+### Votación General (%)
+
+```{r viz-vote, echo=FALSE, fig.height=4, fig.width=4, warning=FALSE}
 ggplot(suma_vote, aes(x = "", y = prop, fill = vote)) +
   geom_bar(stat="identity", width=2, color="white") +
   coord_polar("y", start=0, direction = -1) +
@@ -122,15 +125,17 @@ ggplot(suma_vote, aes(x = "", y = prop, fill = vote)) +
   theme(legend.text = element_text(size=15)) +
   geom_text(aes(y = prop, label = scales::percent(prop, accuracy = 1, 
                                                   scale = 1)), 
-            color = "white", size=10, 
+            color = "white", size=5, 
             face="bold", position = position_stack(vjust = 0.5)) +
   scale_fill_manual(values=c("#33a02c", "#e31a1c", "#CCCCCC"), 
                     breaks=c("A favor", "En contra", "Abstención")) 
 ```
 
+__Total participantes: 259 personas__ 
+
 ### Votación por Género (%)
 
-```{r viz-gen1, echo=FALSE, warning=FALSE}
+```{r viz-gen1, echo=FALSE, fig.height=4, fig.width=4, warning=FALSE}
 ggplot(suma_gen, aes(x = "", y = prop, fill = genero)) +
   geom_bar(stat="identity", width=2, color="white") +
   coord_polar("y", start=0) +
@@ -140,7 +145,7 @@ ggplot(suma_gen, aes(x = "", y = prop, fill = genero)) +
   guides(fill=guide_legend(title=NULL)) +
   geom_text(aes(y = prop, label = scales::percent(prop, accuracy = 1, 
                                                   scale = 1)), 
-            color = "white", size=10, 
+            color = "white", size=5, 
             face="bold", position = position_stack(vjust = 0.5)) +
   scale_fill_manual(values=c("#cab2d6", "#ff7f00", "#CCCCCC"), 
                     breaks=c("Masculino", "Femenino", "Abstención")) 
@@ -162,17 +167,15 @@ ggplot(suma_gen, aes(x = "", y = prop, fill = genero)) +
 
 ### Número de participantes por región 
 
-```{r viz-region, fig.align='right', echo=FALSE, warning=FALSE}
+```{r viz-region, echo=FALSE, fig.align='right', fig.height=6, fig.width=10, warning=FALSE}
 ggplot(suma_region, aes(y = reorder(region, sumaregion), x = sumaregion, 
                           fill = ToHighlight )) + 
   geom_bar(stat = "identity", position = "identity") + 
   theme_classic() +
   labs(title ="", x = "Número participantes", y = "") +
-  geom_text(aes(label = sumaregion), color = "black", size=3.1, hjust = -0.2) +
+  geom_text(aes(label = sumaregion), color = "black", size=5, hjust = -0.2) +
   scale_fill_manual( values = c("yes" = "#1f78b4", "no" = "#CCCCCC"), 
                      guide = FALSE)
 ```
 
-
- \newpage
 
