@@ -1,7 +1,7 @@
 ---
 title: "Proyecto de ley que fija Ley Marco de Cambio Climático"
 subtitle: "Reporte Congreso Virtual"
-author: "Boletín: 13191-12"
+author: "Boletín Nª13191-12"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -23,8 +23,6 @@ library(broom)
 library(kableExtra)
 library(forcats)
 library(ggfittext)
-library(extrafont)
-font_import()
 ```
 
 ```{r read-excel, include = FALSE}
@@ -156,7 +154,7 @@ Column  {data-width=500}
 -----------------------------------------------------------------------
 
 
-### Votación General (%)
+### Votación general sobre la idea de legislar (%)
 
 ```{r viz-vote, echo=FALSE}
 ggplot(suma_vote, aes(x = "", y = prop, fill = vote)) +
@@ -175,7 +173,7 @@ ggplot(suma_vote, aes(x = "", y = prop, fill = vote)) +
                     breaks=c("A favor", "En contra", "Abstención")) 
 ```
 
-### Votación por Género (%)
+### Votación por género (%)
 
 ```{r viz-gen1, echo=FALSE}
 ggplot(suma_gen, aes(x = "", y = prop, fill = genero)) +
@@ -214,7 +212,7 @@ Column
 -----------------------------------------------------------------------
 
 
-### Número de participantes por región 
+### Votación general por región 
 
 ```{r viz-region, fig.align='right'}
 ggplot(suma_region, aes(y = reorder(region, sumaregion), x = sumaregion, 
@@ -232,27 +230,16 @@ ggplot(suma_region, aes(y = reorder(region, sumaregion), x = sumaregion,
 Comentarios {data-icon="fa-comments"}
 =======================================================================
 
-Column {data-width=100}
------------------------------------------------------------------------
-
-### Total Comentarios
-
-```{r box-total-com}
-valueBox(nrow(comments)) 
-```
-
 Column 
 -----------------------------------------------------------------------
 
-### Comentarios con número de "me gusta"
+### Comentarios Generales
 
-```{r me-gusta}
+```{r com-gen}
 comments %>%
-  select(comment, me_gusta, no_me_gusta) %>%
-  arrange(desc("me_gusta")) %>%
-  kable(col.names = c('Comentario', '"Me gusta"',
-                      '"No me gusta"'),
-               align = c('lcc')) %>%
+  filter(buen_comentario %in% c("Si", "Si*")) %>%
+  select(comment) %>%
+  kable(col.names = c('Comentarios')) %>%
   kable_styling(bootstrap_options = "striped", full_width = TRUE)       
 ```
 

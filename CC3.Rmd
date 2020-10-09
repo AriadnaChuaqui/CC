@@ -1,15 +1,19 @@
 ---
-title: "**Proyecto de ley que fija Ley Marco de Cambio Climático**"
-date: "Boletín: 13191-12"
+title: "Proyecto de ley que fija Ley Marco de Cambio Climático"
 author: "**Reporte Congreso Virtual**"
+date: "Boletín: 13191-12"
 fontsize: 10pt
+aspectratio: 169 
 output: 
   beamer_presentation:
     theme: "CambridgeUS"
     colortheme: "dolphin"
+    fonttheme: "structurebold"
+    latex_engine: "pdflatex" 
     slide_level: 3
-    latex_engine: xelatex
-    dev: cairo_pdf
+tables: yes
+header-includes:
+  \usepackage{longtable} 
 ---
 
 ```{r load-packages, include = FALSE}
@@ -110,19 +114,22 @@ Proyecto de ley, iniciado en mensaje de S.E. el Presidente de la República, que
 
 Este proyecto crea un marco jurídico para asignar responsabilidades específicas en la implementación de medidas de mitigación y adaptación al cambio climático. De esta forma, se busca que las políticas, planes y programas orientados al cambio climático trascienda al gobierno de turno. Se incluye como meta de mitigación, el 2050, para lograr la neutralidad de emisiones de gases invernadero (es decir, que se absorba la misma cantidad que se produce). <br/>
 
-*Fecha de ingreso: lunes 13 de enero de 2020*\
-*Estado: primer trámite constitucional*\
+Fecha de ingreso: lunes 13 de enero de 2020\
+Estado: primer trámite constitucional\
+__Total participantes: 259 personas__ 
+
+# Votación General
 
 ### Votación General (%)
 
-```{r viz-vote, echo=FALSE, fig.height=4, fig.width=4, warning=FALSE}
+```{r viz-vote, echo=FALSE, fig.height=2.5, fig.width=2.5, warning=FALSE, fig.align='left'}
 ggplot(suma_vote, aes(x = "", y = prop, fill = vote)) +
   geom_bar(stat="identity", width=2, color="white") +
   coord_polar("y", start=0, direction = -1) +
   theme_void() + 
-  theme(legend.position = "right") +
   guides(fill=guide_legend(title=NULL)) +
-  theme(legend.text = element_text(size=15)) +
+  theme(legend.position = "right", legend.key.size = unit(0.3, "cm"),
+        legend.text = element_text(size=9)) +
   geom_text(aes(y = prop, label = scales::percent(prop, accuracy = 1, 
                                                   scale = 1)), 
             color = "white", size=5, 
@@ -131,17 +138,13 @@ ggplot(suma_vote, aes(x = "", y = prop, fill = vote)) +
                     breaks=c("A favor", "En contra", "Abstención")) 
 ```
 
-__Total participantes: 259 personas__ 
-
-### Votación por Género (%)
-
-```{r viz-gen1, echo=FALSE, fig.height=4, fig.width=4, warning=FALSE}
+```{r viz-gen3, echo=FALSE, fig.height=2.5, fig.width=2.5, fig.align='right', warning=FALSE}
 ggplot(suma_gen, aes(x = "", y = prop, fill = genero)) +
   geom_bar(stat="identity", width=2, color="white") +
   coord_polar("y", start=0) +
   theme_void() + 
-  theme(legend.position = "right") +
-  theme(legend.text = element_text(size=15)) +
+  theme(legend.position = "right", legend.key.size = unit(0.3, "cm"), 
+        legend.text = element_text(size=9)) +
   guides(fill=guide_legend(title=NULL)) +
   geom_text(aes(y = prop, label = scales::percent(prop, accuracy = 1, 
                                                   scale = 1)), 
@@ -150,6 +153,29 @@ ggplot(suma_gen, aes(x = "", y = prop, fill = genero)) +
   scale_fill_manual(values=c("#cab2d6", "#ff7f00", "#CCCCCC"), 
                     breaks=c("Masculino", "Femenino", "Abstención")) 
 ```
+
+__Total participantes: 259 personas__ 
+
+### Votación por Género (%)
+
+```{r viz-gen1, echo=FALSE, fig.height=3, fig.width=3, fig.align='left', warning=FALSE}
+ggplot(suma_gen, aes(x = "", y = prop, fill = genero)) +
+  geom_bar(stat="identity", width=2, color="white") +
+  coord_polar("y", start=0) +
+  theme_void() + 
+  theme(legend.position = "right", legend.key.size = unit(0.3, "cm"), 
+        legend.text = element_text(size=9)) +
+  guides(fill=guide_legend(title=NULL)) +
+  geom_text(aes(y = prop, label = scales::percent(prop, accuracy = 1, 
+                                                  scale = 1)), 
+            color = "white", size=5, 
+            face="bold", position = position_stack(vjust = 0.5)) +
+  scale_fill_manual(values=c("#cab2d6", "#ff7f00", "#CCCCCC"), 
+                    breaks=c("Masculino", "Femenino", "Abstención")) 
+```
+
+__Total participantes: 259 personas__ 
+
 
 ```{r viz-gen2, include=FALSE, warning=FALSE}
 ggplot(suma_gen, aes(x = "", y = prop, fill = genero)) +
@@ -167,7 +193,7 @@ ggplot(suma_gen, aes(x = "", y = prop, fill = genero)) +
 
 ### Número de participantes por región 
 
-```{r viz-region, echo=FALSE, fig.align='right', fig.height=6, fig.width=10, warning=FALSE}
+```{r viz-region, echo=FALSE, fig.height=3, fig.width=6, warning=FALSE}
 ggplot(suma_region, aes(y = reorder(region, sumaregion), x = sumaregion, 
                           fill = ToHighlight )) + 
   geom_bar(stat = "identity", position = "identity") + 
@@ -177,5 +203,25 @@ ggplot(suma_region, aes(y = reorder(region, sumaregion), x = sumaregion,
   scale_fill_manual( values = c("yes" = "#1f78b4", "no" = "#CCCCCC"), 
                      guide = FALSE)
 ```
+
+__Total participantes: 259__ 
+
+### Comentarios Generales
+
+```{r tab-comments-gen, echo=FALSE, warning=FALSE}
+comments %>%
+  filter(buen_comentario %in% c("Si", "Si*")) %>%
+  select(comment, me_gusta, no_me_gusta) %>%
+   kable(col.names = c('Comentario', 'Me gusta', 'No me gusta'),
+               align = c('lcc'), longtable = TRUE) %>%
+  kable_styling(bootstrap_options = "striped")
+```
+
+
+# Votación por pregunta
+
+
+
+
 
 
